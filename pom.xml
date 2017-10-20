@@ -34,9 +34,9 @@
     <description>Demo Examples for the Apache Sling Validation Framework</description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/sling/trunk/bundles/extensions/validation/examples</connection>
+        <connection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-validation-examples.git</conncetion>
         <developerConnection> scm:svn:https://svn.apache.org/repos/asf/sling/trunk/bundles/extensions/validation/examples</developerConnection>
-        <url>http://svn.apache.org/viewvc/sling/trunk/bundles/extensions/validation/examples</url>
+        <url>https://gitbox.apache.org/repos/asf?p=sling-org-apache-sling-validation-examples.git.git</url>
     </scm>
 
     <build>
