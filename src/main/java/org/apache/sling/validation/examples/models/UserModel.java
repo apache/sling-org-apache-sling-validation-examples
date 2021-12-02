@@ -20,7 +20,6 @@ package org.apache.sling.validation.examples.models;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;

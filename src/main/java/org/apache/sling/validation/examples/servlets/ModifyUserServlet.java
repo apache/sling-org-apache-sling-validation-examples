@@ -19,32 +19,39 @@
 package org.apache.sling.validation.examples.servlets;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
+import javax.json.Json;
+import javax.json.stream.JsonGenerator;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
-import org.apache.felix.utils.json.JSONWriter;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.apache.sling.servlets.annotations.SlingServletResourceTypes;
 import org.apache.sling.validation.ValidationFailure;
 import org.apache.sling.validation.ValidationResult;
 import org.apache.sling.validation.ValidationService;
 import org.apache.sling.validation.model.ValidationModel;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-@SlingServlet(
+@SlingServletResourceTypes(
         resourceTypes = "/apps/validationdemo/components/user",
         selectors = {"modify"},
         methods = "POST"
 )
+@Component(service = Servlet.class)
 public class ModifyUserServlet extends SlingAllMethodsServlet {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     @Reference
     private ValidationService validationService;
 
@@ -67,19 +74,20 @@ public class ModifyUserServlet extends SlingAllMethodsServlet {
                     request.getRequestDispatcher(request.getResource(), options).forward(request, response);
                 } else {
                     response.setContentType("application/json");
-                    JSONWriter writer = new JSONWriter(response.getWriter());
-                    writer.object();
-                    writer.key("success").value(false);
-                    writer.key("failures").array();
+                    JsonGenerator generator = Json.createGenerator(response.getWriter());
+                    
+                    generator.writeStartObject();
+                    generator.write("success", false);
+                    generator.writeStartArray("failures");
                     for (ValidationFailure failure : vr.getFailures()) {
-                        writer.object();
-                        writer.key("message").value(failure.getMessage(request.getResourceBundle(Locale.US)));
-                        writer.key("location").value(failure.getLocation());
-                        writer.endObject();
+                        generator.writeStartObject();
+                        generator.write("message", failure.getMessage(request.getResourceBundle(Locale.US)));
+                        generator.write("location", failure.getLocation());
+                        generator.writeEnd();
                     }
-                    writer.endArray();
-                    writer.endObject();
-                    response.setStatus(400);
+                    generator.writeEnd();
+                    generator.writeEnd();
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 }
             }
         }
